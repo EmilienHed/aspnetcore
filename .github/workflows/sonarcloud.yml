@@ -21,6 +21,11 @@ jobs:
           distribution: temurin
           java-version: '17'
 
+      # Installé hors du repo : le NuGet.config d'aspnetcore n'inclut pas nuget.org
+      - name: Installer le scanner
+        working-directory: ${{ runner.temp }}
+        run: dotnet tool install --global dotnet-sonarscanner --add-source https://api.nuget.org/v3/index.json
+
       - name: Restore (installe le SDK attendu par global.json dans .dotnet/)
         run: ./restore.sh
 
@@ -29,14 +34,11 @@ jobs:
           echo "$GITHUB_WORKSPACE/.dotnet" >> $GITHUB_PATH
           echo "DOTNET_ROOT=$GITHUB_WORKSPACE/.dotnet" >> $GITHUB_ENV
 
-      - name: Installer le scanner
-        run: dotnet tool install --global dotnet-sonarscanner
-
       - name: Sonar begin
         run: >
           dotnet-sonarscanner begin
-          /k:"TONPSEUDO_aspnetcore"
-          /o:"TONPSEUDO"
+          /k:"EmilienHed_aspnetcore"
+          /o:"emilienhed"
           /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
           /d:sonar.host.url="https://sonarcloud.io"
 
