@@ -1,0 +1,47 @@
+name: SonarCloud
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  sonar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    env:
+      DOTNET_ROLL_FORWARD: Major   # permet au scanner de tourner sur le SDK preview du repo
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0           # historique complet, nécessaire pour Sonar
+          submodules: recursive
+
+      - uses: actions/setup-java@v4  # le scanner Sonar a besoin de Java 17+
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Restore (installe le SDK attendu par global.json dans .dotnet/)
+        run: ./restore.sh
+
+      - name: Utiliser le SDK local du repo
+        run: |
+          echo "$GITHUB_WORKSPACE/.dotnet" >> $GITHUB_PATH
+          echo "DOTNET_ROOT=$GITHUB_WORKSPACE/.dotnet" >> $GITHUB_ENV
+
+      - name: Installer le scanner
+        run: dotnet tool install --global dotnet-sonarscanner
+
+      - name: Sonar begin
+        run: >
+          dotnet-sonarscanner begin
+          /k:"TONPSEUDO_aspnetcore"
+          /o:"TONPSEUDO"
+          /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+          /d:sonar.host.url="https://sonarcloud.io"
+
+      - name: Build
+        run: dotnet build src/Http/Http.slnf -c Release
+
+      - name: Sonar end
+        run: dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
