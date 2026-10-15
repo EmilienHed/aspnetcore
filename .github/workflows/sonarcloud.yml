@@ -44,6 +44,7 @@ jobs:
           echo "$GITHUB_WORKSPACE/.dotnet" >> $GITHUB_PATH
           echo "DOTNET_ROOT=$GITHUB_WORKSPACE/.dotnet" >> $GITHUB_ENV
 
+      # Analyse limitée au code produit (src/<zone>/.../src) : ni tests, ni samples, ni scripts, ni outillage
       - name: Sonar begin
         run: >
           dotnet-sonarscanner begin
@@ -51,7 +52,8 @@ jobs:
           /o:"emilienhed"
           /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
           /d:sonar.host.url="https://sonarcloud.io"
-          /d:sonar.exclusions="**/node_modules/**,**/dist/**,.dotnet/**,artifacts/**,**/test/**,**/tests/**,**/testassets/**,**/TestAssets/**,**/*.Tests/**,**/*Tests.cs,src/Testing/**"
+          /d:sonar.inclusions="src/**/src/**"
+          /d:sonar.exclusions="**/node_modules/**,**/dist/**,src/submodules/**,**/test/**,**/tests/**,**/testassets/**,**/TestAssets/**,**/*Tests*/**,**/*Test*.cs,**/Testing/**,**/TestHost/**,**/*.test.ts,**/*.spec.ts,**/samples/**,**/benchmarks/**,**/benchmarkapps/**,**/perf/**,**/*.sh,**/*.ps1,**/*.psm1,**/*.cmd,**/*.py,**/*.yml,**/*.yaml,**/*.key,**/*.pem,**/Dockerfile"
 
       # Les analyseurs Sonar ajoutent des warnings : on ne les traite pas comme des erreurs
       - name: Build
