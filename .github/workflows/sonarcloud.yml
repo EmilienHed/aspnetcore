@@ -26,6 +26,16 @@ jobs:
         working-directory: ${{ runner.temp }}
         run: dotnet tool install --global dotnet-sonarscanner --add-source https://api.nuget.org/v3/index.json
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      # Génère les assets JS Blazor (blazor.web.js…) requis par le build .NET
+      - name: Build JS
+        run: |
+          npm ci
+          npm run build
+
       - name: Restore (installe le SDK attendu par global.json dans .dotnet/)
         run: ./restore.sh
 
