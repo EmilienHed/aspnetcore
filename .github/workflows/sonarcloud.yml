@@ -51,7 +51,7 @@ jobs:
           /o:"emilienhed"
           /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
           /d:sonar.host.url="https://sonarcloud.io"
-          /d:sonar.exclusions="**/node_modules/**,**/dist/**,.dotnet/**,artifacts/**"
+          /d:sonar.exclusions="**/node_modules/**,**/dist/**,.dotnet/**,artifacts/**,**/test/**,**/tests/**,**/testassets/**,**/TestAssets/**,**/*.Tests/**,**/*Tests.cs,src/Testing/**"
 
       # Les analyseurs Sonar ajoutent des warnings : on ne les traite pas comme des erreurs
       - name: Build
