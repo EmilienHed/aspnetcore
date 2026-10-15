@@ -43,7 +43,7 @@ jobs:
           /d:sonar.host.url="https://sonarcloud.io"
 
       - name: Build
-        run: dotnet build src/Http/Http.slnf -c Release
+        run: dotnet build src/Http/HttpAbstractions.slnf -c Release
 
       - name: Sonar end
         run: dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
