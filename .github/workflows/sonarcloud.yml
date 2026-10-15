@@ -47,7 +47,7 @@ jobs:
       - name: Build
         run: |
           set -o pipefail
-          dotnet build src/Http/HttpAbstractions.slnf -c Release /p:TreatWarningsAsErrors=false /warnaserror- 2>&1 | tee build.log || {
+          dotnet build src/Http/HttpAbstractions.slnf -c Release /p:TreatWarningsAsErrors=false 2>&1 | tee build.log || {
             grep -E ": error [A-Z]+[0-9]+" build.log | sort -u | head -30 | sed 's/^/::error::/'
             exit 1
           }
