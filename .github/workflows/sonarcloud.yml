@@ -42,8 +42,15 @@ jobs:
           /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
           /d:sonar.host.url="https://sonarcloud.io"
 
+      # Les analyseurs Sonar ajoutent des warnings : on ne les traite pas comme des erreurs.
+      # Les erreurs MSBuild sont remontées en annotations GitHub (visibles sans ouvrir les logs).
       - name: Build
-        run: dotnet build src/Http/HttpAbstractions.slnf -c Release
+        run: |
+          set -o pipefail
+          dotnet build src/Http/HttpAbstractions.slnf -c Release /p:TreatWarningsAsErrors=false /warnaserror- 2>&1 | tee build.log || {
+            grep -E ": error [A-Z]+[0-9]+" build.log | sort -u | head -30 | sed 's/^/::error::/'
+            exit 1
+          }
 
       - name: Sonar end
         run: dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
